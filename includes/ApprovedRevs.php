@@ -714,9 +714,22 @@ class ApprovedRevs {
 			$user
 		);
 
+		self::clearApprovedFileInfo( $title );
+
 		Hooks::run(
 			'ApprovedRevsFileRevisionUnapproved', [ $parser, $title ]
 		);
+	}
+
+	/**
+	 * From a comment in SemanticApprovedRevs:
+	 *   It has been observed that when running `runJobs.php` with `--wait`
+	 *   the `ApprovedRevs` instance holds an outdated cache entry therefore
+	 *   clear the static before trying to get the info
+	 * $mApprovedFileInfo was accessed directly to clear it, so add something to clear it here.
+	 */
+	public static function clearApprovedFileInfo( Title $fileTitle ) {
+		unset( self::$mApprovedFileInfo[ $fileTitle->getDBkey() ] );
 	}
 
 	/**
